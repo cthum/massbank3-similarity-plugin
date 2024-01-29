@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  description: This similarity score api for MassBank3 calculates the spectral similarity
+    between the spectrum defined in the query peak list and the reference spectra
+    list.
+  title: Similarity score api for MassBank3
+  version: 0.0.1
+servers:
+- url: http://localhost/
+paths:
+  /similarity:
+    post:
+      operationId: similarity_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_similarity_post_request'
+        description: a similarity job
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                description: similarity score for each reference spectrum in the order
+                  of the reference spectra list
+                items:
+                  type: number
+                type: array
+          description: similarity job successfully calculated
+      summary: Create a new similarity calculation.
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+    summary: Calculates the spectral similarity between the query peak list and the
+      reference spectra list.
+  /version:
+    get:
+      operationId: version_get
+      responses:
+        "200":
+          content:
+            application/json:
+              example: cosine similarity 1.0.0
+              schema:
+                type: string
+          description: version string
+      summary: Get the version string of the implementation.
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+components:
+  schemas:
+    _similarity_post_request_peak_list:
+      properties:
+        mz:
+          description: m/z value
+          example:
+          - 147.063
+          - 303.05
+          - 449.108
+          - 465.102
+          - 611.161
+          items:
+            type: number
+          title: mz
+          type: array
+        intensity:
+          description: intensity values
+          example:
+          - 121.684
+          - 10000.0
+          - 657.368
+          - 5884.21
+          - 6700.0
+          items:
+            type: number
+          title: intensity
+          type: array
+        reference_spectra_list:
+          description: "the reference spectra list, list of ACCESSION strings"
+          example:
+          - MSBNK-IPB_Halle-PB001341
+          - MSBNK-IPB_Halle-PB006202
+          - MSBNK-IPB_Halle-PB006203
+          - MSBNK-IPB_Halle-PB001342
+          - MSBNK-IPB_Halle-PB001343
+          items:
+            type: string
+          title: reference_spectra_list
+          type: array
+      title: _similarity_post_request_peak_list
+      type: object
+    _similarity_post_request:
+      properties:
+        peak_list:
+          $ref: '#/components/schemas/_similarity_post_request_peak_list'
+      title: _similarity_post_request
+      type: object
